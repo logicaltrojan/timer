@@ -17,7 +17,7 @@
             return{
                 timerInfoArray : [
                     {
-                        minute : 25,
+                        minute : 20,
                         color : "blue"
                     },
                     {

@@ -2,16 +2,36 @@
     <div>
 
 
+
+<!--        <v-progress-circular-->
+<!--                v-for="(item, index) in timerInfoArray"-->
+<!--                :key="index"-->
+<!--                style="position: absolute"-->
+<!--                :value="secondPercentageArray[index]"-->
+<!--                size="200"-->
+<!--                width="20"-->
+<!--                :color="item.color"-->
+<!--                :rotate=""-->
+<!--        >-->
+<!--            <p>{{item.minute}}</p>-->
+<!--        </v-progress-circular>-->
         <v-progress-circular
-                v-for="(item, index) in timerInfoArray"
-                :key="index"
                 style="position: absolute"
-                :value="minutePercentageArray[index]"
+                :value="secondPercentageArray[0]"
                 size="200"
                 width="20"
-                :color="item.color"
+                color="red"
+                :rotate="rotateValueTransformer(0)"
         >
-            <p>{{item.minute}}</p>
+        </v-progress-circular>
+        <v-progress-circular
+                style="position: absolute"
+                :value="secondPercentageArray[1]"
+                size="200"
+                width="20"
+                color="blue"
+                :rotate="rotateValueTransformer(360*(0.8))"
+        >
         </v-progress-circular>
 
 
@@ -33,16 +53,15 @@
             }
         },
         computed : {
-            minutePercentageArray(){
+            secondPercentageArray(){
                 let calculatedArray= [];
                 let sum = 0;
-                for(var idx in this.timerInfoArray)  {
-                    sum += this.timerInfoArray[idx].minute;
+                for(var idx in this.minuteSecondsArray)  {
+                    sum += this.minuteSecondsArray[idx];
                 }
 
-
-                this.timerInfoArray.forEach(function(ele){
-                    let calculatedValue = CommonUtil.calculatePercentageAsRoundedNumber(ele.minute, sum);
+                this.minuteSecondsArray.forEach(function(seconds){
+                    let calculatedValue = CommonUtil.calculatePercentageAsRoundedNumber(seconds, sum);
                     calculatedArray.push(calculatedValue);
                 });
 
@@ -54,9 +73,9 @@
                 let calculatedSecondArray= [];
 
                 this.timerInfoArray.forEach(function(timerInfo){
-                    let calcuatedSecondValue = CommonUtil.minuteToSecond(timerInfo.minute);
+                    let calculatedSecondValue = CommonUtil.minuteToSecond(timerInfo.minute);
 
-                    calculatedSecondArray.push(calcuatedSecondValue);
+                    calculatedSecondArray.push(calculatedSecondValue);
                 });
 
                 return calculatedSecondArray;
@@ -70,6 +89,32 @@
         },
         data(){
             return {
+
+
+            }
+        },
+        created(){
+            this.calculateRotateValueByPercentage([80,20])   ;
+        },
+        methods : {
+            rotateValueTransformer(value){
+                return (value-90)%360;
+            },
+
+            //TODO NEED DATA STANDARD
+            calculateRotateValueByPercentage(percentageArray){
+
+                let rotateValueArray= [0];
+                let percentageAccumulate= 0;
+
+                for(let i = 0 ; i < percentageArray.length-1 ; i++){
+                    percentageAccumulate += percentageArray[i];
+                    rotateValueArray.push(Math.round((360/100) * percentageAccumulate));
+                }
+
+                return rotateValueArray;
+
+
 
 
             }
