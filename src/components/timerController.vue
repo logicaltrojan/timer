@@ -17,11 +17,11 @@
             return{
                 timerInfoArray : [
                     {
-                        minute : 20,
+                        minute : 1,
                         color : "blue"
                     },
                     {
-                        minute : 5,
+                        minute : 1,
                         color : "red"
                     }
                 ]
