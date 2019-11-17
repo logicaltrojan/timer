@@ -6,8 +6,9 @@ import CommonUtil from "../../src/CommonUtil";
 jest.useFakeTimers();
 
 describe("timeDisplayer" , () =>{
+    const TEST_TIMER_MINUTE_ARRAY_25_5 = [25, 5] ;
 
-    const timerInfoArray = [
+    const TEST_TIMER_INFO_ARRAY_25_5= [
         {
             minute : 25,
             color : "blue"
@@ -46,20 +47,24 @@ describe("timeDisplayer" , () =>{
                 timerInfoArray: timerInfoFactory(timerMinuteArray)
             }
         });
-    };
+    }
+
+
 
 
     it("transforms minute value to second", () =>{
-        var wm = simpleWrapperFactory([25,5]);
+        var wm = simpleWrapperFactory(TEST_TIMER_MINUTE_ARRAY_25_5);
 
-        expect(wm.vm.msArray[0]).toEqual(CommonUtil.minuteToSecond(timerInfoArray[0].minute));
-        expect(wm.vm.msArray[1]).toEqual(CommonUtil.minuteToSecond(timerInfoArray[1].minute));
+        expect(wm.vm.msArray[0]).toEqual(CommonUtil.minuteToSecond(TEST_TIMER_INFO_ARRAY_25_5[0].minute));
+        expect(wm.vm.msArray[1]).toEqual(CommonUtil.minuteToSecond(TEST_TIMER_INFO_ARRAY_25_5[1].minute));
 
     });
 
     it("transforms second array props to hundred value" , ()=>{
 
-        var wm = simpleWrapperFactory([25,5]);
+
+        var wm = simpleWrapperFactory(TEST_TIMER_MINUTE_ARRAY_25_5);
+
 
         var expectedValue = CommonUtil.calculatePercentageAsRoundedNumber(25*60, 30*60);
         var expectedValue2 = CommonUtil.calculatePercentageAsRoundedNumber( 5*60, 30*60);
@@ -75,17 +80,17 @@ describe("timeDisplayer" , () =>{
     it("renders timer as much as element of timerMinuteArray", ()=>{
 
 
-        var wm = simpleWrapperFactory([25,5]);
+        var wm = simpleWrapperFactory(TEST_TIMER_MINUTE_ARRAY_25_5);
 
-        expect(wm.findAll("[role=progressbar]").length).toBe(timerInfoArray.length);
+
+        expect(wm.findAll("[role=progressbar]").length).toBe(TEST_TIMER_INFO_ARRAY_25_5.length);
 
 
     });
 
     it("second percentageArray is changed if miunteSecondsArray change", () => {
 
-        var wm = simpleWrapperFactory([20,5]);
-
+        var wm = simpleWrapperFactory(TEST_TIMER_MINUTE_ARRAY_25_5);
 
         var beforePercentage = wm.vm.secondPercentageArray[0];
         var beforeSecond= wm.vm.msArray[0];
@@ -108,7 +113,8 @@ describe("timeDisplayer" , () =>{
 
     it("'s method calcuates rotate value of each timerInfo minute by its percentage value ", ()=>{
 
-        var wm = simpleWrapperFactory([25,5]);
+        var wm = simpleWrapperFactory(TEST_TIMER_MINUTE_ARRAY_25_5);
+
         const testArray = [80, 20];
         const testArray2 = [75, 20, 5];
         const testArray3 = [100];
@@ -128,7 +134,8 @@ describe("timeDisplayer" , () =>{
 
     it("s rotateValue transforms its timer rotate value to vuetify js's progress bar rotate prop", ()=>{
 
-        var wm = simpleWrapperFactory([25,5]);
+
+        var wm = simpleWrapperFactory(TEST_TIMER_MINUTE_ARRAY_25_5);
 
         expect(wm.vm.rotateValueTransformer(0)).toEqual(-90);
         expect(wm.vm.rotateValueTransformer(90)).toEqual(360);
@@ -139,27 +146,13 @@ describe("timeDisplayer" , () =>{
 
     });
 
-    it('increase its msValueArray one by one second', () =>{
-        var wrapper = simpleWrapperFactory([25,5]);
 
-
-        expect(wrapper.vm.msValueArray).toEqual([0, 0]);
-
-
-        jest.advanceTimersByTime(9000);
-
-
-        expect(wrapper.vm.msValueArray[0]).toEqual(9);
-
-
-    });
 
     it('initilize percentage value array with 0 , length of timerInfoArray', ()=>{
         var wrapper = simpleWrapperFactory([25, 5 , 3, 4]);
 
         expect(wrapper.vm.percentageValueArray).toEqual([0,0,0,0]);
     });
-
 
 
 
@@ -181,6 +174,7 @@ describe("timeDisplayer" , () =>{
         var wrapper = simpleWrapperFactory([10,5]);
 
         expect(wrapper.vm.runningTimerIndex).toEqual(0);
+        wrapper.vm.startTimer();
         jest.advanceTimersByTime(10*60*1000 + 3000);
 
         expect(wrapper.vm.msValueArray[0]).toEqual(10*60);
@@ -188,12 +182,116 @@ describe("timeDisplayer" , () =>{
         expect(wrapper.vm.runningTimerIndex).toEqual(1);
 
 
-    })
+    });
 
 
 
+    it("every timer end,  stops the timer and msValue is init", () =>{
+        var wrapper = simpleWrapperFactory([10,5]);
+
+        expect(wrapper.vm.runningTimerIndex).toEqual(0);
+        jest.advanceTimersByTime(10*60*1000 + 5*60*1000 + 3000);
 
 
+        expect(wrapper.vm.msValueArray[0]).toEqual(0);
+        expect(wrapper.vm.msValueArray[1]).toEqual(0);
+        expect(wrapper.vm.runningTimerIndex).toEqual(0);
+
+
+
+    });
+
+    it("startTimer prop is turn to true, start timer method is invoked", ()=>{
+
+        var wrapper = simpleWrapperFactory([25, 5]);
+        expect(wrapper.vm.isStarted).toBe(false);
+        var mock = jest.fn();
+        wrapper.setMethods({
+            startTimer: mock
+        });
+
+
+        wrapper.setProps({
+            isStarted: true
+        });
+
+
+
+        expect(wrapper.vm.startTimer).toHaveBeenCalled();
+    });
+
+
+    it('when startTimer is invoked increase its msValueArray one by one second', () =>{
+        var wrapper = simpleWrapperFactory(TEST_TIMER_MINUTE_ARRAY_25_5);
+
+
+        expect(wrapper.vm.msValueArray).toEqual([0, 0]);
+        wrapper.vm.startTimer();
+
+
+        jest.advanceTimersByTime(9000);
+
+
+        expect(wrapper.vm.msValueArray[0]).toEqual(9);
+
+
+    });
+
+    it("pause prop is turn to true, pause timer method is invoked", ()=>{
+        var wrapper = simpleWrapperFactory(TEST_TIMER_MINUTE_ARRAY_25_5);
+        expect(wrapper.vm.isPaused).toBe(false);
+        var mock = jest.fn();
+        wrapper.setMethods({
+            pauseTimer: mock
+        });
+
+
+        wrapper.setProps({
+            isPaused:true
+        });
+        expect(wrapper.vm.pauseTimer).toHaveBeenCalled();
+    });
+
+    it("pauseTimer is invoked, the timer Interval is stopped", ()=>{
+        var wrapper = simpleWrapperFactory(TEST_TIMER_MINUTE_ARRAY_25_5);
+
+        wrapper.setProps({
+            isStarted : true
+        });
+        expect(wrapper.vm.timerInterval).toBeDefined();
+
+        wrapper.setProps({
+            isPaused:true
+        });
+
+        expect(wrapper.vm.timerInterval).toBeNull();
+
+    });
+
+    it("resume Timer is invoked, the timer interval starts when it finished", ()=>{
+        var wrapper = simpleWrapperFactory(TEST_TIMER_MINUTE_ARRAY_25_5);
+
+        wrapper.setProps({
+            isStarted : true
+        });
+        jest.advanceTimersByTime(3000);
+
+
+        wrapper.setProps({
+            isPaused:true
+        });
+        expect(wrapper.vm.timerInterval).toBeNull();
+
+
+        wrapper.setProps({
+            isPaused:false
+        });
+        jest.advanceTimersByTime(3000);
+
+        expect(wrapper.vm.msValueArray[0]).toEqual(6);
+
+
+    });
 });
 
 
