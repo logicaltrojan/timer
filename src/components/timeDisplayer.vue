@@ -3,7 +3,7 @@
         <v-progress-circular
                 v-for="(item, index) in timerInfoArray"
                 :key="index"
-                style="position: absolute"
+                style="position: absolute;"
                 :value="percentageValueArray[index]"
                 size="200"
                 width="20"
@@ -53,7 +53,8 @@
                 default() {
                     return false;
                 }
-            }
+            },
+
         },
         watch : {
             timerInfoArray :{
@@ -64,9 +65,7 @@
                         return accumulator+currentValue.minute*60;
                     }, 0);
                     // eslint-disable-next-line no-unused-vars
-
-                    this.msValueArray= new Array(timerInfoArray.length).fill(0);
-
+                    this.msValueArray = this.msArray;
 
                 }
             },
@@ -76,10 +75,12 @@
                    if(msValueArray[this.runningTimerIndex] === this.msArray[this.runningTimerIndex]){
                        this.runningTimerIndex++;
 
+
                     if(this.runningTimerIndex === msValueArray.length){
                         this.clearTimerInterval();
                         this.runningTimerIndex = 0;
                         this.msValueArray = new Array(msValueArray.length).fill(0);
+                        this.$emit("timerStopped");
 
                     }
                 }
@@ -190,19 +191,25 @@
                 return rotateValueArray;
 
             },
-            startTimer(){
+            timerTickStart(){
 
                 var vm = this;
                 this.timerInterval= setInterval(function(){
                     vm.$set(vm.msValueArray, vm.runningTimerIndex, vm.msValueArray[vm.runningTimerIndex]+1);
 
                 }, 1000) ;
+            },
+            startTimer(){
+
+                this.msValueArray= new Array(this.timerInfoArray.length).fill(0);
+                this.timerTickStart();
 
             },
             stopTimer(){
+
             },
             resumeTimer(){
-                this.startTimer();
+                this.timerTickStart();
             },
             pauseTimer(){
                 this.clearTimerInterval();
@@ -212,5 +219,9 @@
 </script>
 
 <style scoped>
+    .v-progress-circular__underlay {
+        stroke: transparent;
+
+    }
 
 </style>

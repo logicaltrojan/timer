@@ -148,10 +148,10 @@ describe("timeDisplayer" , () =>{
 
 
 
-    it('initilize percentage value array with 0 , length of timerInfoArray', ()=>{
-        var wrapper = simpleWrapperFactory([25, 5 , 3, 4]);
+    it('initilize percentage value by timer Minute percentage , length of timerInfoArray', ()=>{
+        var wrapper = simpleWrapperFactory([5, 5, 5, 5]);
 
-        expect(wrapper.vm.percentageValueArray).toEqual([0,0,0,0]);
+        expect(wrapper.vm.percentageValueArray).toEqual([25,25,25,25]);
     });
 
 
@@ -183,7 +183,21 @@ describe("timeDisplayer" , () =>{
 
 
     });
+    it('should emit timerStopped when all the timers are stopped', function () {
 
+
+        var wrapper = simpleWrapperFactory([10,5]);
+
+        wrapper.setProps({
+            isStarted : true
+        });
+
+        jest.advanceTimersByTime(10*60*1000 + 5*60*1000 + 3000);
+
+        expect(wrapper.emitted().timerStopped).toBeTruthy();
+
+
+    });
 
 
     it("every timer end,  stops the timer and msValue is init", () =>{
@@ -193,8 +207,7 @@ describe("timeDisplayer" , () =>{
         jest.advanceTimersByTime(10*60*1000 + 5*60*1000 + 3000);
 
 
-        expect(wrapper.vm.msValueArray[0]).toEqual(0);
-        expect(wrapper.vm.msValueArray[1]).toEqual(0);
+        expect(wrapper.vm.msValueArray).toEqual(wrapper.vm.msArray);
         expect(wrapper.vm.runningTimerIndex).toEqual(0);
 
 
@@ -225,7 +238,7 @@ describe("timeDisplayer" , () =>{
         var wrapper = simpleWrapperFactory(TEST_TIMER_MINUTE_ARRAY_25_5);
 
 
-        expect(wrapper.vm.msValueArray).toEqual([0, 0]);
+        expect(wrapper.vm.msValueArray).toEqual([25*60, 5*60]);
         wrapper.vm.startTimer();
 
 
@@ -291,6 +304,20 @@ describe("timeDisplayer" , () =>{
         expect(wrapper.vm.msValueArray[0]).toEqual(6);
 
 
+    });
+
+    it("timer shows full value and when it starts, it inti ms Valeu to 0", ()=>{
+        var wrapper = simpleWrapperFactory(TEST_TIMER_MINUTE_ARRAY_25_5);
+
+
+        expect(wrapper.vm.msValueArray).toEqual([25*60, 5*60]);
+
+        wrapper.setProps({
+            isStarted : true
+            });
+
+
+        expect(wrapper.vm.msValueArray).toEqual([0, 0]);
     });
 });
 
