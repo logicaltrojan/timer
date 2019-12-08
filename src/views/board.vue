@@ -1,15 +1,19 @@
 <template>
     <div>
         <v-container>
-            <v-row>
-                <entry-display-card
-                        v-for="(entry, index) in entries"
-                        :key="index"
-                        @click="showEntryDialog(entry._id)"
-                        :entry="entry"
-                ></entry-display-card>
-            </v-row>
-            {{dialog}}
+            <v-layout row wrap >
+                <v-flex
+                    lg6 md6 xs12
+                    :key="index"
+                    v-for="(entry, index) in entries"
+                    class="pa-3"
+                >
+                        <entry-display-card
+                                @click="showEntryDialog(entry._id)"
+                                :entry="entry"
+                        />
+                </v-flex>
+            </v-layout>
         </v-container>
         <v-dialog
         v-model="dialog">
